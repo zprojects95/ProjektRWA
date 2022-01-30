@@ -1,0 +1,87 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<div class="jumbotron">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ime</th>
+                <th>Prezime</th>
+                <th>E-mail</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@section scripts {
+    <script>
+        const dataTableConfig = {
+            ajax: {
+                url: '/api/kupci',
+                dataSrc:''
+            },
+            columns: [
+                { data: 'IDKupac'},
+                { data: 'Ime'},
+                { data: 'Prezime'},
+                {
+                    data: 'Email',
+                    render: function (email) {
+                        return `<a href="mailto:${email}">${email}</a>`
+                    }
+                },
+                {
+                    data: '',
+                    render: function (data, type, kupac) {
+                        return `<button
+                                    class="btn btn-danger btn-sm"
+                                    data-id=${kupac.IDKupac}
+                                    data-ime=${kupac.Ime}
+                                    data-prezime=${kupac.Prezime}>
+                                    Delete
+                                </button>`
+                    }
+                }
+            ]
+        }
+
+        let btnDelete;
+
+        const table = $('.table')
+            .DataTable(dataTableConfig)
+            .on('click', '.btn', onDeleteClick);
+
+        function onDeleteClick(e) {
+            btnDelete = this;
+            const { id, ime, prezime } = btnDelete.dataset;
+
+            if (confirm(`Obrisati ${ime} ${prezime}`))
+                deleteKupac(id);
+        }
+
+        function deleteKupac(id) {
+            $.ajax({
+                url: `/api/kupci/${id}`,
+                method: 'delete'
+            })
+                .done(function (message) {
+                    console.log(message);
+                    table
+                        .row($(btnDelete).parents('tr'))
+                        .remove()
+                        .draw();
+                })
+                .fail(function () {
+                    console.log('Kupac nije obrisan');
+                });
+        }
+
+    </script>
+
+}
