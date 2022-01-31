@@ -29,6 +29,22 @@ namespace Zadatak1.Repositories
             return gradovi;
         }
 
+        public static List<Grad> GetByDrzava(int IDDrzava)
+        {
+            List<Grad> gradovi = new List<Grad>();
+
+            ds = SqlHelper.ExecuteDataset(cs, "GetGradoviDrzave", IDDrzava);
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                gradovi.Add(new Grad
+                {
+                    IDGrad = (int)row["IDGrad"],
+                    Naziv = row["Naziv"].ToString()
+                });
+            }
+            return gradovi;
+        }
+
         public static Grad GetById(int IDGrad)
         {
             DataRow row = SqlHelper.ExecuteDataset(cs, "GetGrad", IDGrad).Tables[0].Rows[0];

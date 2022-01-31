@@ -16,9 +16,15 @@ namespace Zadatak1.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult GetById(int id)
+        public IHttpActionResult GetByDrzava(int id)
         {
-            return Ok(GradRepository.GetById(id));
+            return Ok(GradRepository.GetByDrzava(id));
         }
+
+        //[HttpGet]
+        //public IHttpActionResult GetById(int id)
+        //{
+        //    return Ok(GradRepository.GetById(id));
+        //}
     }
 }
