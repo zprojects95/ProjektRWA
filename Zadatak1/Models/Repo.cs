@@ -54,33 +54,6 @@ public class Repo
         }
     }
 
-    public static Grad GetGrad(int IDGrad)
-    {
-        DataRow row = SqlHelper.ExecuteDataset(cs, "GetGrad", IDGrad).Tables[0].Rows[0];
-        return new Grad
-        {
-            IDGrad = (int)row["IDGrad"],
-            DrzavaID = (int)row["DrzavaID"],
-            Naziv = row["Naziv"].ToString()
-        };
-    }
-
-    public static List<Grad> GetGradovi()
-    {
-        List<Grad> kolekcija = new List<Grad>();
-
-        ds = SqlHelper.ExecuteDataset(cs, "GetGradovi");
-        foreach (DataRow row in ds.Tables[0].Rows)
-        {
-            kolekcija.Add(new Grad
-            {
-                IDGrad = (int)row["IDGrad"],
-                Naziv = row["Naziv"].ToString()
-            });
-        }
-        return kolekcija;
-    }
-
     public static int UpdateKupac(Kupac kupac)
     {
         return SqlHelper.ExecuteNonQuery(cs, "UpdateKupac", kupac.IDKupac, kupac.Ime, kupac.Prezime, kupac.Email, kupac.Telefon, kupac.GradID);
