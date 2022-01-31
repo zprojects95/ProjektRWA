@@ -7,13 +7,14 @@
 
 
 <div class="jumbotron">
+    <button type="button" class="btn btn-primary" style="margin-bottom:15px" id="modalBtn">Dodaj kupca</button>
     <div class="d-flex mr-2">
-        <select class="form-select" id="drzavaSelect"style="margin-bottom:20px" aria-label="Default select example">
+        <select class="form-select" id="drzavaSelect" style="margin-bottom:20px" aria-label="Default select example">
         </select>
         <select class="form-select" id="gradSelect" style="margin-bottom:20px" aria-label="Default select example">
         </select>
     </div>
-    
+
     <table class="table">
         <thead>
             <tr>
@@ -26,60 +27,41 @@
         </thead>
     </table>
 </div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Novi Kupac</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="firstName" class="col-form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName" class="col-form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName">
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="col-form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">Send message</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section scripts {
     <script>
-
-        let drzavaId = 1;
-
-        GetDrzave();
-        GetGradoviByDrzava(drzavaId);
-        
-        $('#drzavaSelect').on('change', function () {
-            drzavaId = this.value;
-            GetGradoviByDrzava(drzavaId);
-        });
-
-        function GetGradoviByDrzava(drzavaId) {
-            $.ajax({
-                url: '/api/gradovi/' + drzavaId,
-                type: 'GET',
-                dataType: 'json',
-                success: function (res) {
-                    $('#gradSelect').children().remove().end();
-                    $.each(res, function (i, value) {
-                        $('#gradSelect').append($('<option>').text(value.Naziv).attr('value', value.Naziv));
-                    });
-                }
-            });
-        }
-
-        function GetDrzave() {
-            $.ajax({
-                url: '/api/drzava',
-                type: 'GET',
-                dataType: 'json',
-                success: function (res) {
-                    $.each(res, function (i, value) {
-                        $('#drzavaSelect').append($('<option>').text(value.Naziv).attr('value', value.IDDrzava));
-                    });
-                }
-            });
-        }
-
-        //$.ajax({
-        //    url: '/api/gradovi',
-        //    type: 'GET',
-        //    dataType: 'json',
-        //    data: drzavaId,
-        //    success: function (res) {
-        //        $.each(res, function (i, value) {
-        //            $('#gradSelect').append($('<option>').text(value.Naziv).attr('value', value.Naziv));
-        //        });
-        //    }
-        //});
-
-        
 
         const dataTableConfig = {
             ajax: {
@@ -99,7 +81,8 @@
                 {
                     data: '',
                     render: function (data, type, kupac) {
-                        return `<button
+                        return `
+                                <button
                                     class="btn btn-danger btn-sm"
                                     data-id=${kupac.IDKupac}
                                     data-ime=${kupac.Ime}
@@ -120,6 +103,72 @@
         const table = $('.table')
             .DataTable(dataTableConfig)
             .on('click', '.btn', onDeleteClick);
+
+        $('#modalBtn').on('click', function () {
+            $('#exampleModal').modal('show');
+        });
+
+
+        $("#submitBtn").on('click', function () {
+            let formData = {
+                Ime: $("#firstName").val(),
+                Prezime: $("#lastName").val(),
+                Email: $("#email").val(),
+                GradID: 1
+            };
+            AddCustomer(formData);
+            $("#exampleModal").modal('hide');
+            table.ajax.reload();
+        });
+
+        let drzavaId = 1;
+
+        GetDrzave();
+        GetGradoviByDrzava(drzavaId);
+
+        $('#drzavaSelect').on('change', function () {
+            drzavaId = this.value;
+            GetGradoviByDrzava(drzavaId);
+        });
+
+        function GetGradoviByDrzava(drzavaId) {
+            $.ajax({
+                url: '/api/gradovi/' + drzavaId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (res) {
+                    $('#gradSelect').children().remove().end();
+                    $.each(res, function (i, value) {
+                        $('#gradSelect').append($('<option>').text(value.Naziv).attr('value', value.Naziv));
+                    });
+                }
+            });
+        }
+
+        function AddCustomer(customer) {
+            $.ajax({
+                url: '/api/kupci',
+                type: 'POST',
+                dataType: 'json',
+                data: customer,
+                success: function (res) {
+                    console.log("Kupac " + customer.Naziv + " dodan");
+                }
+            });
+        }
+
+        function GetDrzave() {
+            $.ajax({
+                url: '/api/drzava',
+                type: 'GET',
+                dataType: 'json',
+                success: function (res) {
+                    $.each(res, function (i, value) {
+                        $('#drzavaSelect').append($('<option>').text(value.Naziv).attr('value', value.IDDrzava));
+                    });
+                }
+            });
+        }
 
         function onDeleteClick(e) {
             btnDelete = this;
