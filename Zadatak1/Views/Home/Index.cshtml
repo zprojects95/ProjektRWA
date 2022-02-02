@@ -38,6 +38,7 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <input type="hidden" class="form-control" id="IDCustomer" name="idCustomer">
                     <div class="form-group">
                         <label for="firstName" class="col-form-label">First Name</label>
                         <input type="text" class="form-control" id="firstName" name="firstName">
@@ -63,46 +64,16 @@
 @section scripts {
     <script>
 
-        const dataTableConfig = {
-            ajax: {
-                url: '/api/kupci',
-                dataSrc:''
-            },
-            columns: [
-                { data: 'IDKupac'},
-                { data: 'Ime'},
-                { data: 'Prezime'},
-                {
-                    data: 'Email',
-                    render: function (email) {
-                        return `<a href="mailto:${email}">${email}</a>`
-                    }
-                },
-                {
-                    data: '',
-                    render: function (data, type, kupac) {
-                        return `
-                                <button
-                                    class="btn btn-danger btn-sm"
-                                    data-id=${kupac.IDKupac}
-                                    data-ime=${kupac.Ime}
-                                    data-prezime=${kupac.Prezime}>
-                                    Delete
-                                </button>`
-                    }
-                }
-            ],
-            lengthMenu: [[10, 25, 50], [10, 25, 50]],
-            columnDefs: [
-                { orderable: false, targets: [0,3,4] }
-            ]
-        }
+        let drzavaId = 1;
+
+        GetDrzave();
+        GetGradoviByDrzava(drzavaId);
 
         let btnDelete;
 
-        const table = $('.table')
-            .DataTable(dataTableConfig)
-            .on('click', '.btn', onDeleteClick);
+        let isUpdating = false;
+
+        var table = CreateTable(1);
 
         $('#modalBtn').on('click', function () {
             $('#exampleModal').modal('show');
@@ -110,28 +81,113 @@
 
 
         $("#submitBtn").on('click', function () {
-            let formData = {
-                Ime: $("#firstName").val(),
-                Prezime: $("#lastName").val(),
-                Email: $("#email").val(),
-                GradID: 1
-            };
-            AddCustomer(formData);
-            $("#exampleModal").modal('hide');
-            table.ajax.reload();
+
+            if (!isUpdating) {
+                let formData = {
+                    Ime: $("#firstName").val(),
+                    Prezime: $("#lastName").val(),
+                    Email: $("#email").val(),
+                    GradID: 1
+                };
+                AddCustomer(formData);
+                $("#exampleModal").modal('hide');
+                table.ajax.reload();
+                table.draw();
+            }
+            else {
+                console.log($('#exampleModal').data());
+
+                let formData = {
+                    IDKupac: $("#IDCustomer").val(),
+                    Ime: $("#firstName").val(),
+                    Prezime: $("#lastName").val(),
+                    Email: $("#email").val(),
+                    GradID: 1
+                };
+                UpdateCustomer(formData.IDKupac, formData);
+                $("#exampleModal").modal('hide');
+                table.ajax.reload();
+                table.draw();
+            }
+            isUpdating = false;
+
         });
-
-        let drzavaId = 1;
-
-        GetDrzave();
-        GetGradoviByDrzava(drzavaId);
 
         $('#drzavaSelect').on('change', function () {
             drzavaId = this.value;
             GetGradoviByDrzava(drzavaId);
+
+            if (drzavaId == 1) {
+                gradId = 1;
+            }
+            else if (drzavaId == 2) {
+                gradId = 6;
+            }
+            else {
+                gradId = 9;
+            }
+
+            table.destroy();
+            table = CreateTable(gradId);
         });
 
-        function GetGradoviByDrzava(drzavaId) {
+        $('#gradSelect').on('change', function () {
+            let gradId = this.value;
+            table.destroy();
+            table = CreateTable(gradId);
+        });
+
+        function CreateTable(gradId) {
+
+            const dataTableConfig = {
+                ajax: {
+                    url: `/api/kupci?gradId=${gradId}`,
+                    dataSrc: ''
+                },
+                columns: [
+                    { data: 'IDKupac' },
+                    { data: 'Ime' },
+                    { data: 'Prezime' },
+                    {
+                        data: 'Email',
+                        render: function (email) {
+                            return `<a href="mailto:${email}">${email}</a>`
+                        }
+                    },
+                    {
+                        data: '',
+                        render: function (data, type, kupac) {
+                            return `<button
+                                    class="btn btn-warning btn-sm"
+                                    data-id=${kupac.IDKupac}
+                                    data-ime=${kupac.Ime}
+                                    data-prezime=${kupac.Prezime}
+                                    data-email=${kupac.Email}>
+                                    Update
+                                </button>
+                                <button
+                                    class="btn btn-danger btn-sm"
+                                    data-id=${kupac.IDKupac}
+                                    data-ime=${kupac.Ime}
+                                    data-prezime=${kupac.Prezime}>
+                                    Delete
+                                </button>`
+                        }
+                    }
+                ],
+                lengthMenu: [[10, 25, 50], [10, 25, 50]],
+                columnDefs: [
+                    { orderable: false, targets: [0, 3, 4] }
+                ]
+            }
+
+            return $('.table')
+                .DataTable(dataTableConfig)
+                .on('click', '.btn-danger', onDeleteClick)
+                .on('click', '.btn-warning', onUpdateClick);
+        }
+
+        async function GetGradoviByDrzava(drzavaId) {
             $.ajax({
                 url: '/api/gradovi/' + drzavaId,
                 type: 'GET',
@@ -139,7 +195,7 @@
                 success: function (res) {
                     $('#gradSelect').children().remove().end();
                     $.each(res, function (i, value) {
-                        $('#gradSelect').append($('<option>').text(value.Naziv).attr('value', value.Naziv));
+                        $('#gradSelect').append($('<option>').text(value.Naziv).attr('value', value.IDGrad));
                     });
                 }
             });
@@ -152,7 +208,20 @@
                 dataType: 'json',
                 data: customer,
                 success: function (res) {
-                    console.log("Kupac " + customer.Naziv + " dodan");
+                    console.log("Kupac " + customer.Ime + " " + customer.Prezime + " dodan");
+                }
+            });
+        }
+
+        function UpdateCustomer(id, customer) {
+
+            $.ajax({
+                url: `/api/kupci/${id}`,
+                type: 'PUT',
+                dataType: 'json',
+                data: customer,
+                success: function (res) {
+                    console.log("Kupac " + customer.Ime + " " + customer.Prezime + " azuriran");
                 }
             });
         }
@@ -169,6 +238,23 @@
                 }
             });
         }
+
+        function onUpdateClick(e) {
+            btnUpdate = this;
+            const { id, ime, prezime, email } = btnUpdate.dataset;
+
+            isUpdating = true;
+
+            $('#exampleModal').modal('show');
+
+            $("#firstName").val(ime);
+            $("#lastName").val(prezime);
+            $("#email").val(email);
+            $("#IDCustomer").val(id);
+
+            console.log($("#IDCustomer").val())
+        }
+
 
         function onDeleteClick(e) {
             btnDelete = this;

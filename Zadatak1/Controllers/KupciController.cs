@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Web.Http;
 using Zadatak1.App_Start;
 using Zadatak1.Models.Dto;
@@ -10,9 +12,17 @@ namespace Zadatak1.Controllers
         [HttpGet]
         public IHttpActionResult GetKupci()
         {
+            int gradId = 1;
+
+            foreach (var parameter in Request.GetQueryNameValuePairs())
+            {
+                if (parameter.Key == "gradId") gradId = Int32.Parse(parameter.Value);
+                else break;
+            }
+
             return Ok(AutoMapperConfig
                 .Mapper
-                .Map<IEnumerable<KupacDto>>(Repo.GetKupci()));
+                .Map<IEnumerable<KupacDto>>(Repo.GetKupciByCity(gradId)));
         }
 
         [HttpGet]

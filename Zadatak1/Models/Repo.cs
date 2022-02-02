@@ -37,9 +37,9 @@ public class Repo
         };
     }
 
-    public static IEnumerable<Kupac> GetKupci()
+    public static IEnumerable<Kupac> GetKupciByCity(int gradId)
     {
-        ds = SqlHelper.ExecuteDataset(cs, "SelectTop25Desc");
+        ds = SqlHelper.ExecuteDataset(cs, "GetKupciGrada", gradId);
         foreach (DataRow row in ds.Tables[0].Rows)
         {
             yield return new Kupac
