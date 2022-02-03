@@ -157,7 +157,16 @@
                     {
                         data: '',
                         render: function (data, type, kupac) {
-                            return `<button
+                            return `
+                                <button
+                                    class="btn btn-primary btn-sm"
+                                    data-id=${kupac.IDKupac}
+                                    data-ime=${kupac.Ime}
+                                    data-prezime=${kupac.Prezime}
+                                    data-email=${kupac.Email}>
+                                    Racuni
+                                </button>
+                                <button
                                     class="btn btn-warning btn-sm"
                                     data-id=${kupac.IDKupac}
                                     data-ime=${kupac.Ime}
@@ -183,6 +192,7 @@
 
             return $('.table')
                 .DataTable(dataTableConfig)
+                .on('click', '.btn-primary', onRacuniClick)
                 .on('click', '.btn-danger', onDeleteClick)
                 .on('click', '.btn-warning', onUpdateClick);
         }
@@ -226,6 +236,11 @@
             });
         }
 
+        function GetRacuniCustomer(id) {
+            var url = `https://localhost:44393/Home/Racuni/${id}`;
+            window.location.replace(url);
+        }
+
         function GetDrzave() {
             $.ajax({
                 url: '/api/drzava',
@@ -237,6 +252,12 @@
                     });
                 }
             });
+        }
+
+        function onRacuniClick(e) {
+            btnRacuni = this;
+            const { id } = btnRacuni.dataset;
+            GetRacuniCustomer(id);
         }
 
         function onUpdateClick(e) {
