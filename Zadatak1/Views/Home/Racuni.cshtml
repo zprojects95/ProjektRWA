@@ -1,0 +1,48 @@
+﻿@model int
+@{
+    ViewBag.Title = "Racuni";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<div class="jumbotron">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Datum Izdavanja</th>
+                <th>Broj Racuna</th>
+                <th>Komentar</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@section scripts {
+    <script>
+
+        var kupacId = @Html.Raw(Json.Encode(Model));
+
+        const dataTableConfig = {
+            ajax: {
+                url: `/api/racun/${kupacId}`,
+                type: 'GET',
+                dataType: 'json',
+                dataSrc: ''
+            },
+            columns: [
+                { data: 'IDRacun' },
+                { data: 'DatumIzdavanja' },
+                { data: 'BrojRacuna' },
+                { data: 'Komentar' },
+            ],
+            lengthMenu: [[10, 25, 50], [10, 25, 50]],
+            columnDefs: [
+                { orderable: false, targets: [0, 1] }
+            ]
+        }
+
+        $('.table').DataTable(dataTableConfig);
+
+    </script>
+}

@@ -13,6 +13,11 @@ namespace Zadatak1.Controllers
             return View();
         }
 
+        public ActionResult Racuni(int id)
+        {
+            return View(id);
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
