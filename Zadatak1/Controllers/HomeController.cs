@@ -18,5 +18,10 @@ namespace Zadatak1.Controllers
             return View(id);
         }
 
+        public ActionResult Stavke(int id)
+        {
+            return View(id);
+        }
+
     }
 }

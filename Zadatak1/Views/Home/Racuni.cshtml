@@ -35,6 +35,27 @@
                 { data: 'DatumIzdavanja' },
                 { data: 'BrojRacuna' },
                 { data: 'Komentar' },
+                {
+                    data: '',
+                    render: function (data, type, racun) {
+                        return `
+                                <button
+                                    class="btn btn-primary btn-sm"
+                                    data-id=${racun.IDRacun}
+                                    Racuni
+                                </button>
+                                <button
+                                    class="btn btn-warning btn-sm"
+                                    data-id=${racun.IDRacun}
+                                    Update
+                                </button>
+                                <button
+                                    class="btn btn-danger btn-sm"
+                                    data-id=${racun.IDRacun}
+                                    Delete
+                                </button>`
+                    }
+                }
             ],
             lengthMenu: [[10, 25, 50], [10, 25, 50]],
             columnDefs: [
@@ -42,7 +63,19 @@
             ]
         }
 
-        $('.table').DataTable(dataTableConfig);
+        $('.table').DataTable(dataTableConfig)
+            .on('click', '.btn-primary', onStavkeClick);
+
+        function GetStavkeRacuna(id) {
+            var url = `https://localhost:44393/Home/Stavke/${id}`;
+            window.location.replace(url);
+        }
+
+        function onStavkeClick() {
+            btnRacuni = this;
+            const { id } = btnRacuni.dataset;
+            GetStavkeRacuna(id);
+        }
 
     </script>
 }

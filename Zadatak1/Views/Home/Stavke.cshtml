@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "Stavke";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<div class="jumbotron">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Broj Kreditne Kartice</th>
+                <th>Komercijalist</th>
+                <th>Proizvod</th>
+                <th>Potkategorija</th>
+                <th>Kategorija</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@section scripts {
+    <script>
+
+        var racunId = @Html.Raw(Json.Encode(Model));
+
+        const dataTableConfig = {
+            ajax: {
+                url: `/api/stavka/${racunId}`,
+                type: 'GET',
+                dataType: 'json',
+                dataSrc: ''
+            },
+            columns: [
+                { data: 'BrojKreditneKartice' },
+                { data: 'Komercijalist' },
+                { data: 'Proizvod' },
+                { data: 'Potkategorija' },
+                { data: 'Kategorija' }
+            ],
+            lengthMenu: [[10, 25, 50], [10, 25, 50]],
+            columnDefs: [
+                { orderable: false, targets: [0, 1] }
+            ]
+        }
+
+        $('.table').DataTable(dataTableConfig);
+
+    </script>
+}
