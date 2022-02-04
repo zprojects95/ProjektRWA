@@ -147,10 +147,10 @@
     <Compile Include="Models\Grad.cs" />
     <Compile Include="Models\Kupac.cs" />
     <Compile Include="Models\Racun.cs" />
-    <Compile Include="Models\Repo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\DrzavaRepository.cs" />
     <Compile Include="Repositories\GradRepository.cs" />
+    <Compile Include="Repositories\KupacRepository.cs" />
     <Compile Include="Repositories\RacunRepository.cs" />
   </ItemGroup>
   <ItemGroup>

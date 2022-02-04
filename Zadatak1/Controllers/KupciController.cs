@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Web.Http;
 using Zadatak1.App_Start;
 using Zadatak1.Models.Dto;
+using Zadatak1.Repositories;
 
 namespace Zadatak1.Controllers
 {
@@ -22,7 +23,7 @@ namespace Zadatak1.Controllers
 
             return Ok(AutoMapperConfig
                 .Mapper
-                .Map<IEnumerable<KupacDto>>(Repo.GetKupciByCity(gradId)));
+                .Map<IEnumerable<KupacDto>>(KupacRepository.GetKupciByCity(gradId)));
         }
 
         [HttpGet]
