@@ -29,7 +29,7 @@ namespace Zadatak1.Controllers
         [HttpGet]
         public IHttpActionResult GetKupac(int id)
         {
-            var kupacFromDb = Repo.GetKupac(id);
+            var kupacFromDb = KupacRepository.GetKupac(id);
 
             if (kupacFromDb == null)
                 return NotFound();
@@ -43,7 +43,7 @@ namespace Zadatak1.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            Repo.InsertKupac(kupac);
+            KupacRepository.InsertKupac(kupac);
 
             return Ok();
         }
@@ -51,7 +51,7 @@ namespace Zadatak1.Controllers
         [HttpPut]
         public IHttpActionResult UpdateKupac(int id, [FromBody] Kupac kupac)
         {
-            var kupacFromDb = Repo.GetKupac(id);
+            var kupacFromDb = KupacRepository.GetKupac(id);
 
             if (kupacFromDb == null)
                 return NotFound();
@@ -59,7 +59,7 @@ namespace Zadatak1.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            Repo.UpdateKupac(kupac);
+            KupacRepository.UpdateKupac(kupac);
 
             return Ok("Kupac ažuriran");
         }
@@ -67,14 +67,14 @@ namespace Zadatak1.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteKupac(int id)
         {
-            var kupac = Repo.GetKupac(id);
+            var kupac = KupacRepository.GetKupac(id);
 
             if (kupac == null)
                 return NotFound();
 
             try
             {
-                Repo.DeleteKupac(id);
+                KupacRepository.DeleteKupac(id);
                 return Ok("Kupac obrisan");
 
             }
