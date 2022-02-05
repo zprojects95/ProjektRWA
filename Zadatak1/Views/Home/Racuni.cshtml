@@ -13,6 +13,7 @@
                 <th>Datum Izdavanja</th>
                 <th>Broj Racuna</th>
                 <th>Komentar</th>
+                <th></th>
             </tr>
         </thead>
     </table>
@@ -40,26 +41,17 @@
                     render: function (data, type, racun) {
                         return `
                                 <button
-                                    class="btn btn-primary btn-sm"
-                                    data-id=${racun.IDRacun}
-                                    Racuni
+                                    class="btn btn-primary "
+                                    data-id=${racun.IDRacun}>
+                                    Stavke
                                 </button>
-                                <button
-                                    class="btn btn-warning btn-sm"
-                                    data-id=${racun.IDRacun}
-                                    Update
-                                </button>
-                                <button
-                                    class="btn btn-danger btn-sm"
-                                    data-id=${racun.IDRacun}
-                                    Delete
-                                </button>`
+                               `
                     }
                 }
             ],
             lengthMenu: [[10, 25, 50], [10, 25, 50]],
             columnDefs: [
-                { orderable: false, targets: [0, 1] }
+                { orderable: false, targets: [0, 3] }
             ]
         }
 
