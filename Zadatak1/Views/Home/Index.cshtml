@@ -6,16 +6,23 @@
 <h2>Kupci</h2>
 
 
+    
 <div class="jumbotron">
     <button type="button" class="btn btn-primary" style="margin-bottom:15px" id="modalBtn">Dodaj kupca</button>
-    <div class="d-flex mr-2">
-        <select class="form-select" id="drzavaSelect" style="margin-bottom:20px" aria-label="Default select example">
-        </select>
-        <select class="form-select" id="gradSelect" style="margin-bottom:20px" aria-label="Default select example">
-        </select>
+    <div class="form-group">
+        <div class="col-sm-6 col-md-4">
+            <div class="d-flex mr-2">
+                <span class="control-label" for="drzava">Odabir drzave:</span>
+                <select class="form-control" id="drzavaSelect" style="margin-bottom:20px" aria-label="Default select example"></select>
+                <span class="control-label" for="grad">Odrabir grada:</span>
+                <select class="form-control" id="gradSelect" style="margin-bottom:20px" aria-label="Default select example">
+                </select>
+            </div>
+        </div>
     </div>
 
-    <table class="table">
+
+    <table class="table table-striped bg-info">
         <thead>
             <tr>
                 <th>ID</th>
@@ -187,15 +194,16 @@
                 lengthMenu: [[10, 25, 50], [10, 25, 50]],
                 columnDefs: [
                     { orderable: false, targets: [0, 3, 4] }
-                ]
-            }
+                ],
+                dom: '<f<t> lip>'
+                }
 
-            return $('.table')
+                return $('.table')
                 .DataTable(dataTableConfig)
                 .on('click', '.btn-primary', onRacuniClick)
                 .on('click', '.btn-danger', onDeleteClick)
                 .on('click', '.btn-warning', onUpdateClick);
-        }
+                }
 
         async function GetGradoviByDrzava(drzavaId) {
             $.ajax({
