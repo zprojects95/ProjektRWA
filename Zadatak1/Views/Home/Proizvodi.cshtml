@@ -1,0 +1,239 @@
+﻿@{
+    ViewBag.Title = "Proizvodi";
+}
+
+<h2>Proizvodi</h2>
+
+
+
+<div class="jumbotron">
+    <button type="button" class="btn btn-primary" style="margin-bottom:15px" id="modalBtn">Dodaj proizvod</button>
+
+    <table class="table table-striped bg-info">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Naziv</th>
+                <th>Broj Proizvoda</th>
+                <th>Boja</th>
+                <th>Minimalna Kolicina na Skladistu</th>
+                <th>Cijena bez PDV</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Novi Proizvod</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" class="form-control" id="IDProduct" name="idProduct">
+                    <div class="form-group">
+                        <label for="naziv" class="col-form-label">Naziv</label>
+                        <input type="text" class="form-control" id="naziv" name="naziv">
+                    </div>
+                    <div class="form-group">
+                        <label for="brojProizvoda" class="col-form-label">Broj proizvoda</label>
+                        <input type="text" class="form-control" id="brojProizvoda" name="brojProizvoda">
+                    </div>
+                    <div class="form-group">
+                        <label for="boja" class="col-form-label">Boja</label>
+                        <input type="text" class="form-control" id="boja" name="boja">
+                    </div>
+                    <div class="form-group">
+                        <label for="minimalnaKolicina" class="col-form-label">Minimalna kolicina na skladistu</label>
+                        <input type="text" class="form-control" id="minimalnaKolicina" name="minimalnaKolicina">
+                    </div>
+                    <div class="form-group">
+                        <label for="cijena" class="col-form-label">Cijena bez PDV</label>
+                        <input type="number" class="form-control" id="cijena" name="cijena">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">Spremi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+
+        let isUpdating = false;
+
+        let table = CreateTable();
+
+        function CreateTable() {
+            const dataTableConfig = {
+                ajax: {
+                    url: `/api/proizvod`,
+                    dataSrc: ''
+                },
+                columns: [
+                    { data: 'IDProizvod' },
+                    { data: 'Naziv' },
+                    { data: 'BrojProizvoda' },
+                    { data: 'Boja' },
+                    { data: 'MinimalnaKolicina' },
+                    { data: 'Cijena' },
+                    {
+                        data: '',
+                        render: function (data, type, proizvod) {
+                            return `
+                                <button
+                                    class="btn btn-warning btn-sm"
+                                    data-id=${proizvod.IDProizvod}
+                                    data-naziv=${proizvod.Naziv}
+                                    data-brojProizvoda=${proizvod.BrojProizvoda}
+                                    data-boja=${proizvod.Boja}
+                                    data-minimalnaKolicina=${proizvod.MinimalnaKolicina}
+                                    data-cijena=${proizvod.Cijena}>
+                                    Update
+                                </button>
+                                <button
+                                    class="btn btn-danger btn-sm"
+                                    data-id=${proizvod.IDProizvod}
+                                    data-naziv=${proizvod.Naziv}
+                                    data-brojProizvoda=${proizvod.BrojProizvoda}
+                                    data-boja=${proizvod.Boja}
+                                    data-minimalnaKolicina=${proizvod.MinimalnaKolicina}
+                                    data-cijena=${proizvod.Cijena}>
+                                    Delete
+                                </button>`
+                        }
+                    }
+                ],
+                lengthMenu: [[10, 25, 50], [10, 25, 50]],
+                columnDefs: [
+                    { orderable: false }
+                ],
+                dom: '<f<t> lip>'
+            }
+
+            return $('.table')
+                .DataTable(dataTableConfig)
+                .on('click', '.btn-warning', onUpdateClick)
+                .on('click', '.btn-danger', onDeleteClick);
+        }
+
+       
+
+        $('#modalBtn').on('click', function () {
+            $('#exampleModal').modal('show');
+        });
+
+
+        $("#submitBtn").on('click', function () {
+
+            if (!isUpdating) {
+                let formData = {
+                    Naziv: $("#naziv").val(),
+                    BrojProizvoda: $("#brojProizvoda").val(),
+                    Boja: $("#boja").val(),
+                    MinimalnaKolicina: $("#minimalnaKolicina").val(),
+                    Cijena: $("#cijena").val(),
+                    PotkategorijaId: 1
+                };
+                AddProduct(formData);
+                $("#exampleModal").modal('hide');
+                table.ajax.reload();
+                table.draw();
+            }
+            else {
+
+                let formData = {
+                    IDProizvod: $("#IDProduct").val(),
+                    Naziv: $("#naziv").val(),
+                    BrojProizvoda: $("#brojProizvoda").val(),
+                    Boja: $("#boja").val(),
+                    MinimalnaKolicina: $("#minimalnaKolicina").val(),
+                    Cijena: $("#cijena").val(),
+                    PotkategorijaId: 1
+                };
+                UpdateProduct(formData.IDProizvod, formData);
+                $("#exampleModal").modal('hide');
+                table.ajax.reload();
+                table.draw();
+            }
+            isUpdating = false;
+
+        });
+
+        function AddProduct(product) {
+            $.ajax({
+                url: '/api/proizvod',
+                type: 'POST',
+                dataType: 'json',
+                data: product,
+                success: function (res) {
+                    console.log("Proizvod  dodan");
+                }
+            });
+        }
+
+        function UpdateProduct(id, product) {
+
+            $.ajax({
+                url: `/api/proizvod/${id}`,
+                type: 'PUT',
+                dataType: 'json',
+                data: product,
+                success: function (res) {
+                    console.log("Proizvod azuriran");
+                }
+            });
+        }
+
+        function onUpdateClick(e) {
+            btnUpdate = this;
+            const { id, naziv, brojProizvoda, boja, minimalnaKolicina, cijena } = btnUpdate.dataset;
+
+            isUpdating = true;
+
+            $('#exampleModal').modal('show');
+
+            $("#IDProduct").val(id);
+            $("#naziv").val(naziv);
+            $("#brojProizvoda").val(brojProizvoda);
+            $("#boja").val(boja);
+            $("#minimalnaKolicina").val(minimalnaKolicina);
+            $("#cijena").val(cijena);
+
+        }
+
+        function deleteProizvod(id) {
+            $.ajax({
+                url: `/api/proizvod/${id}`,
+                method: 'delete'
+            })
+                .done(function (message) {
+                    console.log(message);
+                    table
+                        .row($(btnDelete).parents('tr'))
+                        .remove()
+                        .draw();
+                })
+                .fail(function () {
+                    console.log('Proizvod nije obrisan');
+                });
+        }
+
+        function onDeleteClick(e) {
+            btnDelete = this;
+            const { id, naziv } = btnDelete.dataset;
+
+            if (confirm(`Obrisati ${naziv}`))
+                deleteProizvod(id);
+        }
+
+    </script>
+    }

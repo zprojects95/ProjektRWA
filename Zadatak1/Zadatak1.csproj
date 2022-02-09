@@ -134,18 +134,36 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\DrzavaController.cs" />
+    <Compile Include="Controllers\GradoviController.cs" />
+    <Compile Include="Controllers\KategorijaController.cs" />
     <Compile Include="Controllers\KupciController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PotkategorijaController.cs" />
+    <Compile Include="Controllers\ProizvodController.cs" />
+    <Compile Include="Controllers\RacunController.cs" />
+    <Compile Include="Controllers\StavkaController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Drzava.cs" />
     <Compile Include="Models\Dto\KupacDto.cs" />
     <Compile Include="Models\Grad.cs" />
+    <Compile Include="Models\Kategorija.cs" />
     <Compile Include="Models\Kupac.cs" />
+    <Compile Include="Models\Potkategorija.cs" />
+    <Compile Include="Models\Proizvod.cs" />
     <Compile Include="Models\Racun.cs" />
-    <Compile Include="Models\Repo.cs" />
+    <Compile Include="Models\Stavka.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\DrzavaRepository.cs" />
+    <Compile Include="Repositories\GradRepository.cs" />
+    <Compile Include="Repositories\KategorijaRepository.cs" />
+    <Compile Include="Repositories\KupacRepository.cs" />
+    <Compile Include="Repositories\PotkategorijaRepository.cs" />
+    <Compile Include="Repositories\ProizvodRepository.cs" />
+    <Compile Include="Repositories\RacunRepository.cs" />
+    <Compile Include="Repositories\StavkaRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -406,6 +424,10 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="SQLScripts\Kategorija_CRUD_proc.sql" />
+    <Content Include="SQLScripts\Potkategorija_CRUD_proc.sql" />
+    <Content Include="SQLScripts\Proc.sql" />
+    <Content Include="SQLScripts\Proizvod_CRUD_proc.sql" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -417,12 +439,16 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Racuni.cshtml" />
+    <Content Include="Views\Home\Stavke.cshtml" />
+    <Content Include="Views\Home\Proizvodi.cshtml" />
+    <Content Include="Views\Home\Kategorije.cshtml" />
+    <Content Include="Views\Home\Potkategorije.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Gradovi\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

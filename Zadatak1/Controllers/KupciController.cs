@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Web.Http;
 using Zadatak1.App_Start;
 using Zadatak1.Models.Dto;
+using Zadatak1.Repositories;
 
 namespace Zadatak1.Controllers
 {
@@ -10,15 +13,23 @@ namespace Zadatak1.Controllers
         [HttpGet]
         public IHttpActionResult GetKupci()
         {
+            int gradId = 1;
+
+            foreach (var parameter in Request.GetQueryNameValuePairs())
+            {
+                if (parameter.Key == "gradId") gradId = Int32.Parse(parameter.Value);
+                else break;
+            }
+
             return Ok(AutoMapperConfig
                 .Mapper
-                .Map<IEnumerable<KupacDto>>(Repo.GetKupci()));
+                .Map<IEnumerable<KupacDto>>(KupacRepository.GetKupciByCity(gradId)));
         }
 
         [HttpGet]
         public IHttpActionResult GetKupac(int id)
         {
-            var kupacFromDb = Repo.GetKupac(id);
+            var kupacFromDb = KupacRepository.GetKupac(id);
 
             if (kupacFromDb == null)
                 return NotFound();
@@ -32,7 +43,7 @@ namespace Zadatak1.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            Repo.InsertKupac(kupac);
+            KupacRepository.InsertKupac(kupac);
 
             return Ok();
         }
@@ -40,7 +51,7 @@ namespace Zadatak1.Controllers
         [HttpPut]
         public IHttpActionResult UpdateKupac(int id, [FromBody] Kupac kupac)
         {
-            var kupacFromDb = Repo.GetKupac(id);
+            var kupacFromDb = KupacRepository.GetKupac(id);
 
             if (kupacFromDb == null)
                 return NotFound();
@@ -48,7 +59,7 @@ namespace Zadatak1.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            Repo.UpdateKupac(kupac);
+            KupacRepository.UpdateKupac(kupac);
 
             return Ok("Kupac ažuriran");
         }
@@ -56,14 +67,14 @@ namespace Zadatak1.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteKupac(int id)
         {
-            var kupac = Repo.GetKupac(id);
+            var kupac = KupacRepository.GetKupac(id);
 
             if (kupac == null)
                 return NotFound();
 
             try
             {
-                Repo.DeleteKupac(id);
+                KupacRepository.DeleteKupac(id);
                 return Ok("Kupac obrisan");
 
             }

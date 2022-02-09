@@ -3,10 +3,26 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Kupci</h2>
 
+
+    
 <div class="jumbotron">
-    <table class="table">
+    <button type="button" class="btn btn-primary" style="margin-bottom:15px" id="modalBtn">Dodaj kupca</button>
+    <div class="form-group">
+        <div class="col-sm-6 col-md-4">
+            <div class="d-flex mr-2">
+                <span class="control-label" for="drzava">Odabir drzave:</span>
+                <select class="form-control" id="drzavaSelect" style="margin-bottom:20px" aria-label="Default select example"></select>
+                <span class="control-label" for="grad">Odrabir grada:</span>
+                <select class="form-control" id="gradSelect" style="margin-bottom:20px" aria-label="Default select example">
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <table class="table table-striped bg-info">
         <thead>
             <tr>
                 <th>ID</th>
@@ -18,44 +34,256 @@
         </thead>
     </table>
 </div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Novi Kupac</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" class="form-control" id="IDCustomer" name="idCustomer">
+                    <div class="form-group">
+                        <label for="firstName" class="col-form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName" class="col-form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName">
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="col-form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">Send message</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section scripts {
     <script>
-        const dataTableConfig = {
-            ajax: {
-                url: '/api/kupci',
-                dataSrc:''
-            },
-            columns: [
-                { data: 'IDKupac'},
-                { data: 'Ime'},
-                { data: 'Prezime'},
-                {
-                    data: 'Email',
-                    render: function (email) {
-                        return `<a href="mailto:${email}">${email}</a>`
-                    }
+
+        let drzavaId = 1;
+
+        GetDrzave();
+        GetGradoviByDrzava(drzavaId);
+
+        let btnDelete;
+
+        let isUpdating = false;
+
+        var table = CreateTable(1);
+
+        $('#modalBtn').on('click', function () {
+            $('#exampleModal').modal('show');
+        });
+
+
+        $("#submitBtn").on('click', function () {
+
+            if (!isUpdating) {
+                let formData = {
+                    Ime: $("#firstName").val(),
+                    Prezime: $("#lastName").val(),
+                    Email: $("#email").val(),
+                    GradID: 1
+                };
+                AddCustomer(formData);
+                $("#exampleModal").modal('hide');
+                table.ajax.reload();
+                table.draw();
+            }
+            else {
+                console.log($('#exampleModal').data());
+
+                let formData = {
+                    IDKupac: $("#IDCustomer").val(),
+                    Ime: $("#firstName").val(),
+                    Prezime: $("#lastName").val(),
+                    Email: $("#email").val(),
+                    GradID: 1
+                };
+                UpdateCustomer(formData.IDKupac, formData);
+                $("#exampleModal").modal('hide');
+                table.ajax.reload();
+                table.draw();
+            }
+            isUpdating = false;
+
+        });
+
+        $('#drzavaSelect').on('change', function () {
+            drzavaId = this.value;
+            GetGradoviByDrzava(drzavaId);
+
+            if (drzavaId == 1) {
+                gradId = 1;
+            }
+            else if (drzavaId == 2) {
+                gradId = 6;
+            }
+            else {
+                gradId = 9;
+            }
+
+            table.destroy();
+            table = CreateTable(gradId);
+        });
+
+        $('#gradSelect').on('change', function () {
+            let gradId = this.value;
+            table.destroy();
+            table = CreateTable(gradId);
+        });
+
+        function CreateTable(gradId) {
+
+            const dataTableConfig = {
+                ajax: {
+                    url: `/api/kupci?gradId=${gradId}`,
+                    dataSrc: ''
                 },
-                {
-                    data: '',
-                    render: function (data, type, kupac) {
-                        return `<button
+                columns: [
+                    { data: 'IDKupac' },
+                    { data: 'Ime' },
+                    { data: 'Prezime' },
+                    {
+                        data: 'Email',
+                        render: function (email) {
+                            return `<a href="mailto:${email}">${email}</a>`
+                        }
+                    },
+                    {
+                        data: '',
+                        render: function (data, type, kupac) {
+                            return `
+                                <button
+                                    class="btn btn-primary btn-sm"
+                                    data-id=${kupac.IDKupac}
+                                    data-ime=${kupac.Ime}
+                                    data-prezime=${kupac.Prezime}
+                                    data-email=${kupac.Email}>
+                                    Racuni
+                                </button>
+                                <button
+                                    class="btn btn-warning btn-sm"
+                                    data-id=${kupac.IDKupac}
+                                    data-ime=${kupac.Ime}
+                                    data-prezime=${kupac.Prezime}
+                                    data-email=${kupac.Email}>
+                                    Update
+                                </button>
+                                <button
                                     class="btn btn-danger btn-sm"
                                     data-id=${kupac.IDKupac}
                                     data-ime=${kupac.Ime}
                                     data-prezime=${kupac.Prezime}>
                                     Delete
                                 </button>`
+                        }
                     }
+                ],
+                lengthMenu: [[10, 25, 50], [10, 25, 50]],
+                columnDefs: [
+                    { orderable: false, targets: [0, 3, 4] }
+                ],
+                dom: '<f<t> lip>'
                 }
-            ]
+
+                return $('.table')
+                .DataTable(dataTableConfig)
+                .on('click', '.btn-primary', onRacuniClick)
+                .on('click', '.btn-danger', onDeleteClick)
+                .on('click', '.btn-warning', onUpdateClick);
+                }
+
+        async function GetGradoviByDrzava(drzavaId) {
+            $.ajax({
+                url: '/api/gradovi/' + drzavaId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (res) {
+                    $('#gradSelect').children().remove().end();
+                    $.each(res, function (i, value) {
+                        $('#gradSelect').append($('<option>').text(value.Naziv).attr('value', value.IDGrad));
+                    });
+                }
+            });
         }
 
-        let btnDelete;
+        function AddCustomer(customer) {
+            $.ajax({
+                url: '/api/kupci',
+                type: 'POST',
+                dataType: 'json',
+                data: customer,
+                success: function (res) {
+                    console.log("Kupac " + customer.Ime + " " + customer.Prezime + " dodan");
+                }
+            });
+        }
 
-        const table = $('.table')
-            .DataTable(dataTableConfig)
-            .on('click', '.btn', onDeleteClick);
+        function UpdateCustomer(id, customer) {
+
+            $.ajax({
+                url: `/api/kupci/${id}`,
+                type: 'PUT',
+                dataType: 'json',
+                data: customer,
+                success: function (res) {
+                    console.log("Kupac " + customer.Ime + " " + customer.Prezime + " azuriran");
+                }
+            });
+        }
+
+        function GetRacuniCustomer(id) {
+            var url = `https://localhost:44393/Home/Racuni/${id}`;
+            window.location.replace(url);
+        }
+
+        function GetDrzave() {
+            $.ajax({
+                url: '/api/drzava',
+                type: 'GET',
+                dataType: 'json',
+                success: function (res) {
+                    $.each(res, function (i, value) {
+                        $('#drzavaSelect').append($('<option>').text(value.Naziv).attr('value', value.IDDrzava));
+                    });
+                }
+            });
+        }
+
+        function onRacuniClick(e) {
+            btnRacuni = this;
+            const { id } = btnRacuni.dataset;
+            GetRacuniCustomer(id);
+        }
+
+        function onUpdateClick(e) {
+            btnUpdate = this;
+            const { id, ime, prezime, email } = btnUpdate.dataset;
+
+            isUpdating = true;
+
+            $('#exampleModal').modal('show');
+
+            $("#firstName").val(ime);
+            $("#lastName").val(prezime);
+            $("#email").val(email);
+            $("#IDCustomer").val(id);
+
+            console.log($("#IDCustomer").val())
+        }
+
 
         function onDeleteClick(e) {
             btnDelete = this;

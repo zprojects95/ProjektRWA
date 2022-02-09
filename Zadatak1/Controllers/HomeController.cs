@@ -13,18 +13,29 @@ namespace Zadatak1.Controllers
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult Proizvodi()
         {
-            ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
-        public ActionResult Contact()
+        public ActionResult Kategorije()
         {
-            ViewBag.Message = "Your contact page.";
-
             return View();
         }
+        public ActionResult Potkategorije()
+        {
+            return View();
+        }
+
+        public ActionResult Racuni(int id)
+        {
+            return View(id);
+        }
+
+        public ActionResult Stavke(int id)
+        {
+            return View(id);
+        }
+
     }
 }

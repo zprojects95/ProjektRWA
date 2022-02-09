@@ -1,0 +1,73 @@
+﻿@model int
+@{
+    ViewBag.Title = "Racuni";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<div class="jumbotron">
+    <table class="table table-striped bg-info">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Datum Izdavanja</th>
+                <th>Broj Racuna</th>
+                <th>Komentar</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@section scripts {
+    <script>
+
+        var kupacId = @Html.Raw(Json.Encode(Model));
+
+        const dataTableConfig = {
+            ajax: {
+                url: `/api/racun/${kupacId}`,
+                type: 'GET',
+                dataType: 'json',
+                dataSrc: ''
+            },
+            columns: [
+                { data: 'IDRacun' },
+                { data: 'DatumIzdavanja' },
+                { data: 'BrojRacuna' },
+                { data: 'Komentar' },
+                {
+                    data: '',
+                    render: function (data, type, racun) {
+                        return `
+                                <button
+                                    class="btn btn-primary "
+                                    data-id=${racun.IDRacun}>
+                                    Stavke
+                                </button>
+                               `
+                    }
+                }
+            ],
+            lengthMenu: [[10, 25, 50], [10, 25, 50]],
+            columnDefs: [
+                { orderable: false, targets: [0, 3] }
+            ]
+        }
+
+        $('.table').DataTable(dataTableConfig)
+            .on('click', '.btn-primary', onStavkeClick);
+
+        function GetStavkeRacuna(id) {
+            var url = `https://localhost:44393/Home/Stavke/${id}`;
+            window.location.replace(url);
+        }
+
+        function onStavkeClick() {
+            btnRacuni = this;
+            const { id } = btnRacuni.dataset;
+            GetStavkeRacuna(id);
+        }
+
+    </script>
+}
