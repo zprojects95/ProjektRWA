@@ -1,0 +1,190 @@
+﻿@{
+    ViewBag.Title = "Kategorije";
+}
+
+<h2>Kategorije</h2>
+
+
+
+<div class="jumbotron">
+    <button type="button" class="btn btn-primary" style="margin-bottom:15px" id="modalBtn">Dodaj kategoriju</button>
+
+    <table class="table table-striped bg-info">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Naziv</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Nova Kategorija</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" class="form-control" id="IDCategory" name="idCategory">
+                    <div class="form-group">
+                        <label for="naziv" class="col-form-label">Naziv</label>
+                        <input type="text" class="form-control" id="naziv" name="naziv">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">Spremi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+
+        let isUpdating = false;
+
+        let table = CreateTable();
+
+        function CreateTable() {
+            const dataTableConfig = {
+                ajax: {
+                    url: `/api/kategorija`,
+                    dataSrc: ''
+                },
+                columns: [
+                    { data: 'IDKategorija' },
+                    { data: 'Naziv' },
+                    {
+                        data: '',
+                        render: function (data, type, kategorija) {
+                            return `
+                                <button
+                                    class="btn btn-warning btn-sm"
+                                    data-id=${kategorija.IDKategorija}
+                                    data-naziv=${kategorija.IDKategorija}>
+                                    Update
+                                </button>
+                                <button
+                                    class="btn btn-danger btn-sm"
+                                    data-id=${kategorija.IDKategorija}
+                                    data-naziv=${kategorija.IDKategorija}>
+                                    Delete
+                                </button>`
+                        }
+                    }
+                ],
+                lengthMenu: [[10, 25, 50], [10, 25, 50]],
+                columnDefs: [
+                    { orderable: false }
+                ],
+                dom: '<f<t> lip>'
+            }
+
+            return $('.table')
+                .DataTable(dataTableConfig)
+                .on('click', '.btn-warning', onUpdateClick)
+                .on('click', '.btn-danger', onDeleteClick);
+        }
+
+
+        $('#modalBtn').on('click', function () {
+            $('#exampleModal').modal('show');
+        });
+
+        $("#submitBtn").on('click', function () {
+
+            if (!isUpdating) {
+                let formData = {
+                    Naziv: $("#naziv").val(),
+                };
+                AddCategory(formData);
+                $("#exampleModal").modal('hide');
+                table.ajax.reload();
+                table.draw();
+            }
+            else {
+
+                let formData = {
+                    IDKategorija: $("#IDCategory").val(),
+                    Naziv: $("#naziv").val(),
+                };
+                UpdateCategory(formData.IDKategorija, formData);
+                $("#exampleModal").modal('hide');
+                table.ajax.reload();
+                table.draw();
+            }
+            isUpdating = false;
+
+        });
+
+        function AddCategory(category) {
+            $.ajax({
+                url: '/api/kategorija',
+                type: 'POST',
+                dataType: 'json',
+                data: category,
+                success: function (res) {
+                    console.log("Kategorija  dodana");
+                }
+            });
+        }
+
+        function UpdateCategory(id, category) {
+
+            $.ajax({
+                url: `/api/kategorija/${id}`,
+                type: 'PUT',
+                dataType: 'json',
+                data: category,
+                success: function (res) {
+                    console.log("Kategorija azuriran");
+                }
+            });
+        }
+
+        function onUpdateClick(e) {
+            btnUpdate = this;
+            const { id, naziv } = btnUpdate.dataset;
+
+            isUpdating = true;
+
+            $('#exampleModal').modal('show');
+
+            $("#IDCategory").val(id);
+            $("#naziv").val(naziv);
+        }
+
+        function deleteCategory(id) {
+            $.ajax({
+                url: `/api/kategorija/${id}`,
+                method: 'delete'
+            })
+                .done(function (message) {
+                    console.log(message);
+                    table
+                        .row($(btnDelete).parents('tr'))
+                        .remove()
+                        .draw();
+                })
+                .fail(function () {
+                    console.log('Kategorija nije obrisan');
+                });
+        }
+
+        function onDeleteClick(e) {
+            btnDelete = this;
+            const { id, naziv } = btnDelete.dataset;
+
+            if (confirm(`Obrisati ${naziv}`))
+                deleteCategory(id);
+        }
+
+    </script>
+}

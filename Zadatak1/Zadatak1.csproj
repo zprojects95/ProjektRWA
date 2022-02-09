@@ -439,6 +439,9 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Racuni.cshtml" />
     <Content Include="Views\Home\Stavke.cshtml" />
+    <Content Include="Views\Home\Proizvodi.cshtml" />
+    <Content Include="Views\Home\Kategorije.cshtml" />
+    <Content Include="Views\Home\Potkategorije.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

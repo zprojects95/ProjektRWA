@@ -55,7 +55,7 @@ namespace Zadatak1.Repositories
 
         public static int UpdateKategorija(Kategorija kategorija)
         {
-            return SqlHelper.ExecuteNonQuery(cs, "UpdateKategorija", kategorija.Naziv);
+            return SqlHelper.ExecuteNonQuery(cs, "UpdateKategorija", kategorija.IDKategorija, kategorija.Naziv);
         }
 
         public static int DeleteKategorija(int kategorijaId)
