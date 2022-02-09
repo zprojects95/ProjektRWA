@@ -13,6 +13,20 @@ namespace Zadatak1.Controllers
             return View();
         }
 
+        public ActionResult Proizvodi()
+        {
+            return View();
+        }
+
+        public ActionResult Kategorije()
+        {
+            return View();
+        }
+        public ActionResult Potkategorije()
+        {
+            return View();
+        }
+
         public ActionResult Racuni(int id)
         {
             return View(id);
