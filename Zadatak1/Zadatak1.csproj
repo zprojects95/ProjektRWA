@@ -139,6 +139,7 @@
     <Compile Include="Controllers\KategorijaController.cs" />
     <Compile Include="Controllers\KupciController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PotkategorijaController.cs" />
     <Compile Include="Controllers\ProizvodController.cs" />
     <Compile Include="Controllers\RacunController.cs" />
     <Compile Include="Controllers\StavkaController.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Models\Grad.cs" />
     <Compile Include="Models\Kategorija.cs" />
     <Compile Include="Models\Kupac.cs" />
+    <Compile Include="Models\Potkategorija.cs" />
     <Compile Include="Models\Proizvod.cs" />
     <Compile Include="Models\Racun.cs" />
     <Compile Include="Models\Stavka.cs" />
@@ -158,6 +160,7 @@
     <Compile Include="Repositories\GradRepository.cs" />
     <Compile Include="Repositories\KategorijaRepository.cs" />
     <Compile Include="Repositories\KupacRepository.cs" />
+    <Compile Include="Repositories\PotkategorijaRepository.cs" />
     <Compile Include="Repositories\ProizvodRepository.cs" />
     <Compile Include="Repositories\RacunRepository.cs" />
     <Compile Include="Repositories\StavkaRepository.cs" />
@@ -421,6 +424,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="SQLScripts\Proc.sql" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
