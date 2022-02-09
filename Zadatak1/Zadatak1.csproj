@@ -424,7 +424,10 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="SQLScripts\Kategorija_CRUD_proc.sql" />
+    <Content Include="SQLScripts\Potkategorija_CRUD_proc.sql" />
     <Content Include="SQLScripts\Proc.sql" />
+    <Content Include="SQLScripts\Proizvod_CRUD_proc.sql" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
